@@ -31,7 +31,7 @@ const AbandonedCarts = () => {
 
   const canPreviousPage = currentPage > 0;
 
-  const canNextPage = currentPage < Math.round(data.count / pageSize) - 1;
+  const canNextPage = currentPage < Math.round((data?.count ?? 0) / pageSize) - 1;
 
   const previousPage = () => {
     setCurrentPage(currentPage - 1);
