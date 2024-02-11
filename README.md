@@ -4,6 +4,10 @@ This plugin adds abandoned cart functionality to Medusa. It allows you to send e
 
 I strongly recommend using this plugin in combination with the [Medusa Plugin SendGrid Typescript](https://github.com/luluhoc/medusa-plugin-sendgrid-typescript) to get type safety and autocompletion for the SendGrid API. You can also use the [Medusa Plugin SendGrid](https://medusajs.com)
 
+## Image
+
+![Abandoned Cart](https://github.com/luluhoc/medusa-plugin-abandoned-cart/blob/main/static/abandoned.jpg?raw=true)
+
 [Medusa Website](https://medusajs.com) | [Medusa Repository](https://github.com/medusajs/medusa)
 
 ## Features
