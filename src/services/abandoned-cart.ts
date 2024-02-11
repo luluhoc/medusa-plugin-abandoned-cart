@@ -58,19 +58,19 @@ export default class AbandonedCartService extends TransactionBaseService {
         }
       }
 
-      if (!this.options_.templateId) {
-        throw new MedusaError("Invalid", "TemplateId is required")
-      }
-
       if (!this.options_.from) {
         throw new MedusaError("Invalid", "From is required")
+      }
+
+      if (!templateId) {
+        throw new MedusaError("Invalid", "TemplateId is required")
       }
 
       const emailData = {
         to: "sklepretrobroker@gmail.com",
         from: "RetroBroker <no-reply@retrobroker.com>",
         subject: subject ?? "You left something in your cart",
-        templateId: this.options_.templateId,
+        templateId: templateId,
         dynamic_template_data: {
           ...cart,
         },
