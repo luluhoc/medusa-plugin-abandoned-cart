@@ -106,10 +106,10 @@ const AbandonedCarts = () => {
           </Table.Body>
         </Table>
         <Table.Pagination
-          count={data.count}
+          count={data?.count || 0}
           pageSize={pageSize}
           pageIndex={currentPage}
-          pageCount={Math.round(data.count / pageSize)}
+          pageCount={Math.round((data?.count || 0) / pageSize)}
           canPreviousPage={canPreviousPage}
           canNextPage={canNextPage}
           previousPage={previousPage}
