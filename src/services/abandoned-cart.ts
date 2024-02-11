@@ -2,7 +2,7 @@ import { Cart, Logger, TransactionBaseService } from "@medusajs/medusa"
 import CartRepository from "@medusajs/medusa/dist/repositories/cart"
 import { MedusaError } from "medusa-core-utils"
 import SendGridService from "medusa-plugin-sendgrid-typescript/dist/services/sendgrid"
-import { PluginOptions } from "../types"
+import { PluginOptions, TransformedCart } from "../types"
 
 export default class AbandonedCartService extends TransactionBaseService {
   protected cartRepository: typeof CartRepository
@@ -18,8 +18,8 @@ export default class AbandonedCartService extends TransactionBaseService {
     this.options_ = options
   }
 
-  getCartLocale(cart: Cart): string {
-    return cart?.context?.locale as string || "en"
+  getCartLocale(cart: TransformedCart): string {
+    return cart?.cart_context?.locale as string || "en"
   }
 
   async sendAbandonedCartEmail(id: string) {
@@ -46,7 +46,7 @@ export default class AbandonedCartService extends TransactionBaseService {
         throw new MedusaError("Not Found", "Cart not found")
       }
 
-      const cart = this.transformCart(notNullCartsPromise)
+      const cart = this.transformCart(notNullCartsPromise)  as TransformedCart
 
       if (this.options_.localization) {
         const locale = this.getCartLocale(cart)
@@ -128,11 +128,11 @@ export default class AbandonedCartService extends TransactionBaseService {
     }
   }
 
-  transformCart = (cart: Cart[] | Cart) => {
+  transformCart = (cart: Cart[] | Cart): TransformedCart[] | TransformedCart => {
     if (Array.isArray(cart)) {
-      return cart.map(c => this.transformCart(c))
+      return cart.map(c => this.transformCart(c)) as TransformedCart[]
     }
-
+  
     return {
       id: cart.id,
       email: cart.email,

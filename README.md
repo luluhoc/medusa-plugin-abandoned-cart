@@ -63,3 +63,22 @@ I strongly recommend using this plugin in combination with the [Medusa Plugin Se
     },
   ]
   ```
+
+ 4\. The Sendgrid Template receives the following:
+
+ ```ts
+export interface TransformedCart {
+  id: string;
+  email: string;
+  items: LineItem[];
+  cart_context: Record<string, unknown>;
+  first_name: string;
+  last_name: string;
+  totalPrice: number;
+  created_at: Date;
+  currency: string;
+  region: string;
+  country_code: string;
+  region_name: string;
+}
+ ```
