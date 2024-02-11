@@ -1,10 +1,12 @@
 import { Cart, Logger, TransactionBaseService } from "@medusajs/medusa"
+import { Lifetime } from "awilix"
 import CartRepository from "@medusajs/medusa/dist/repositories/cart"
 import { MedusaError } from "medusa-core-utils"
-import SendGridService from "medusa-plugin-sendgrid-typescript/dist/services/sendgrid"
+import type SendGridService from "medusa-plugin-sendgrid-typescript/dist/services/sendgrid"
 import { PluginOptions, TransformedCart } from "../types"
 
 export default class AbandonedCartService extends TransactionBaseService {
+  static LIFE_TIME = Lifetime.SCOPED
   protected cartRepository: typeof CartRepository
   protected sendGridService: SendGridService
   logger: Logger
@@ -13,7 +15,12 @@ export default class AbandonedCartService extends TransactionBaseService {
   constructor(container, options: PluginOptions) {
     super(container)
     this.cartRepository = container.cartRepository
-    this.sendGridService = container.sendgridService
+    try {
+      this.sendGridService = container?.sendgridService
+    } catch (e) {
+      this.sendGridService = null
+    }
+
     this.logger = container.logger
     this.options_ = options
   }
@@ -35,11 +42,11 @@ export default class AbandonedCartService extends TransactionBaseService {
         order: {
           created_at: "DESC",
         },
-        select: ["id", "email", "created_at", "region", "context"],
+        select: ["id", "email", "created_at", "region", "context", "abandoned_cart_notification_count"],
         relations: ["items", "region", "shipping_address"],
       })
 
-      let templateId = this.options_.templateId
+      let templateId = this.options_.templateId || "d-aa8ddff84d314c99b5dc4c539e896e7d"
       let subject = this.options_.subject
       
       if (!notNullCartsPromise) {
@@ -65,20 +72,31 @@ export default class AbandonedCartService extends TransactionBaseService {
       if (!templateId) {
         throw new MedusaError("Invalid", "TemplateId is required")
       }
+      
 
       const emailData = {
         to: "sklepretrobroker@gmail.com",
-        from: "RetroBroker <no-reply@retrobroker.com>",
+        from: this.options_.from,
         subject: subject ?? "You left something in your cart",
         templateId: templateId,
         dynamic_template_data: {
           ...cart,
         },
       }
-
-      await this.sendGridService.sendEmail(emailData)
-    } catch (error) {
       
+      await this.sendGridService.sendEmail(emailData)
+      await cartRepo.update(cart.id, {
+        abandoned_cart_notification_sent: true,
+        abandoned_cart_notification_date: new Date().toISOString(),
+        abandoned_cart_notification_count: (notNullCartsPromise?.abandoned_cart_notification_count || 0) + 1,
+      })
+
+      return {
+        success: true,
+        message: "Email sent",
+      }
+    } catch (error) {
+      console.log(error)
     }
   }
 
@@ -94,7 +112,7 @@ export default class AbandonedCartService extends TransactionBaseService {
     .andWhere("cart.completed_at IS NULL")
     .andWhere("items.id IS NOT NULL") // Ensure there are items related to the cart
     .orderBy("cart.created_at", "DESC")
-    .select(["cart.id", "cart.email", "cart.created_at", "cart.region", "cart.context", "items", "region", "shipping_address"])
+    .select(["cart.id", "cart.email", "cart.created_at", "cart.region", "cart.context", "items", "region", "shipping_address", "cart.abandoned_cart_notification_date", "cart.abandoned_cart_notification_count", "cart.abandoned_cart_notification_sent"])
     .take(take)
     .skip(skip)
     [type]()
@@ -110,18 +128,12 @@ export default class AbandonedCartService extends TransactionBaseService {
       throw new Error("Invalid take or skip")
     }
 
-    if (!this.sendGridService) {
-      throw new Error("SendGrid service is not available")
-    }
-
     const totalCartsPromise = this.queryBuilder("getCount", takeNumber, skipNumber) as Promise<Number>
 
     const notNullCartsPromises = this.queryBuilder("getMany", takeNumber, skipNumber) as Promise<Cart[]>
   
     const [totalCarts, carts] = await Promise.all([totalCartsPromise, notNullCartsPromises])
-    
     const transformedCarts = this.transformCart(carts)
-
     return {
       abandoned_carts: transformedCarts,
       total_carts: totalCarts,
@@ -132,7 +144,6 @@ export default class AbandonedCartService extends TransactionBaseService {
     if (Array.isArray(cart)) {
       return cart.map(c => this.transformCart(c)) as TransformedCart[]
     }
-  
     return {
       id: cart.id,
       email: cart.email,
@@ -146,6 +157,9 @@ export default class AbandonedCartService extends TransactionBaseService {
       region: cart.region.id,
       country_code: cart.shipping_address?.country_code,
       region_name: cart.region.name,
+      abandoned_cart_notification_count: cart.abandoned_cart_notification_count,
+      abandoned_cart_notification_date: cart.abandoned_cart_notification_date,
+      abandoned_cart_notification_sent: cart.abandoned_cart_notification_sent,
     }
   }
 }

@@ -30,4 +30,7 @@ export interface TransformedCart {
   region: string;
   country_code: string;
   region_name: string;
+  abandoned_cart_notification_date?: string | null
+  abandoned_cart_notification_sent?: boolean | null
+  abandoned_cart_notification_count?: number | null
 }

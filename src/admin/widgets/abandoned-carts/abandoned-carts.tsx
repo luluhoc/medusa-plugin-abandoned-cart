@@ -4,12 +4,17 @@ import { useAdminCustomQuery, useAdminCustomPost } from "medusa-react";
 import ReactCountryFlag from "react-country-flag";
 import React from "react";
 import { AbandonedCartResponse } from "../../types/abandoned-cart";
-import LineLoading from "../../components/line-loading";
+import { useToast } from "@medusajs/ui"
+import LineLoading from "../../components/line-loading";;
+import { Toaster } from "@medusajs/ui"
 
 const AbandonedCarts = () => {
+  
+  const {toast} = useToast();
+
   const [pageSize, setPageSize] = React.useState(15);
   const [currentPage, setCurrentPage] = React.useState(0);
-  const { data, isLoading } = useAdminCustomQuery<
+  const { data, isLoading, refetch } = useAdminCustomQuery<
     {
       take: number;
       skip: number;
@@ -20,7 +25,7 @@ const AbandonedCarts = () => {
     skip: pageSize * currentPage,
   });
 
-  const { mutate } = useAdminCustomPost<
+  const { mutate, isLoading: PostLoading } = useAdminCustomPost<
     {
       id: string;
     },
@@ -42,11 +47,30 @@ const AbandonedCarts = () => {
   };
 
   const handleAction = (id: string) => {
-    mutate({ id });
+    mutate({ id }, {
+      onSuccess: (data) => {
+          toast({
+            title: "Email sent",
+            variant: "success",
+          })
+          refetch();
+      },
+      onError: (error) => {
+        console.log(error);
+        console.log(error.message);
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "error",
+        });
+      },
+    
+    });
   }
 
   return (
     <Container className="text-ui-fg-subtle px-0 pt-0 pb-4">
+      <Toaster />
       <div className="flex justify-between items-center p-5">
         <h2 className="text-lg font-bold">Abandoned Carts</h2>
       </div>
@@ -60,6 +84,9 @@ const AbandonedCarts = () => {
               <Table.HeaderCell>Region</Table.HeaderCell>
               <Table.HeaderCell>Date</Table.HeaderCell>
               <Table.HeaderCell className="text-right">Amount</Table.HeaderCell>
+              <Table.HeaderCell></Table.HeaderCell>
+              <Table.HeaderCell>Date Sent</Table.HeaderCell>
+              <Table.HeaderCell>Count</Table.HeaderCell>
               <Table.HeaderCell></Table.HeaderCell>
             </Table.Row>
           </Table.Header>
@@ -95,7 +122,13 @@ const AbandonedCarts = () => {
                       title={cart.region_name}
                     />
                   </Table.Cell>
-                  <Table.Cell><Button variant="transparent" onClick={() => {
+                  <Table.Cell>
+                    {cart?.abandoned_cart_notification_sent ? new Date(cart?.abandoned_cart_notification_date).toLocaleDateString() : "Not Sent"}
+                  </Table.Cell>
+                  <Table.Cell>
+                    {cart?.abandoned_cart_notification_sent ? cart.abandoned_cart_notification_count : 0}
+                  </Table.Cell>
+                  <Table.Cell><Button disabled={PostLoading} variant="transparent" onClick={() => {
                     handleAction(cart.id);
                   }}>Send Email</Button></Table.Cell>
                 </Table.Row>

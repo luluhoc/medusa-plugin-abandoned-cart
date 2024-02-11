@@ -67,7 +67,7 @@ I strongly recommend using this plugin in combination with the [Medusa Plugin Se
  4\. The Sendgrid Template receives the following:
 
  ```ts
-export interface TransformedCart {
+interface TransformedCart {
   id: string;
   email: string;
   items: LineItem[];
@@ -80,5 +80,8 @@ export interface TransformedCart {
   region: string;
   country_code: string;
   region_name: string;
+  abandoned_cart_notification_date?: string | null
+  abandoned_cart_notification_sent?: boolean | null
+  abandoned_cart_notification_count?: number | null
 }
  ```

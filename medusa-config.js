@@ -29,7 +29,7 @@ const ADMIN_CORS =
 const STORE_CORS = process.env.STORE_CORS || "http://localhost:8000";
 
 const DATABASE_URL =
-  process.env.DATABASE_URL || "postgres://localhost/medusa-store";
+  process.env.DATABASE_URL
 
 const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
 
@@ -42,6 +42,14 @@ const plugins = [
       develop: {
         open: process.env.OPEN_BROWSER !== "false",
       },
+    },
+  },
+  {
+    resolve: `medusa-plugin-sendgrid-typescript`,
+    /** @type {import('medusa-plugin-sendgrid-typescript').PluginOptions} */
+    options: {
+      api_key: process.env.SENDGRID_API_KEY,
+      from: process.env.SENDGRID_FROM,
     },
   },
 ];
