@@ -64,7 +64,7 @@ const AbandonedCarts = () => {
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {isLoading || !data ? data.carts.map((cart) => {
+            {!isLoading && data ? data.carts.map((cart) => {
               return (
                 <Table.Row
                   key={cart.id}
