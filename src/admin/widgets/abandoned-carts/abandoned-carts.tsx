@@ -14,7 +14,7 @@ const AbandonedCarts = () => {
       skip: number;
     },
     AbandonedCartResponse
-  >("/abandoned", ["abandoned"], {
+  >("/abandoned-cart", ["abandoned"], {
     take: pageSize,
     skip: pageSize * currentPage,
   });
