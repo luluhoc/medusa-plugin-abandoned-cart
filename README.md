@@ -52,6 +52,7 @@ I strongly recommend using this plugin in combination with the [Medusa Plugin Se
         from: process.env.SENDGRID_FROM,
         subject: "You have something in your cart", // optional
         templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE,
+        enableUI: true,
         localization: {
           "de-DE": {
             subject: "Sie haben etwas in Ihrem Warenkorb gelassen",
