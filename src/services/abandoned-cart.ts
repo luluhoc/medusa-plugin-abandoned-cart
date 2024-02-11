@@ -18,8 +18,8 @@ export default class AbandonedCartService extends TransactionBaseService {
     this.options_ = options
   }
 
-  getCartLocale(cart: Cart) {
-    return cart?.context?.locale || "en"
+  getCartLocale(cart: Cart): string {
+    return cart?.context?.locale as string || "en"
   }
 
   async sendAbandonedCartEmail(id: string) {
@@ -39,11 +39,24 @@ export default class AbandonedCartService extends TransactionBaseService {
         relations: ["items", "region", "shipping_address"],
       })
 
+      let templateId = this.options_.templateId
+      let subject = this.options_.subject
+      
       if (!notNullCartsPromise) {
         throw new MedusaError("Not Found", "Cart not found")
       }
 
       const cart = this.transformCart(notNullCartsPromise)
+
+      if (this.options_.localization) {
+        const locale = this.getCartLocale(cart)
+        const localeOptions = this.options_.localization[locale]
+
+        if (localeOptions) {
+          templateId = localeOptions.templateId
+          subject = localeOptions.subject ?? subject
+        }
+      }
 
       if (!this.options_.templateId) {
         throw new MedusaError("Invalid", "TemplateId is required")
@@ -56,7 +69,7 @@ export default class AbandonedCartService extends TransactionBaseService {
       const emailData = {
         to: "sklepretrobroker@gmail.com",
         from: "RetroBroker <no-reply@retrobroker.com>",
-        subject: this.options_.subject ?? "You left something in your cart",
+        subject: subject ?? "You left something in your cart",
         templateId: this.options_.templateId,
         dynamic_template_data: {
           ...cart,

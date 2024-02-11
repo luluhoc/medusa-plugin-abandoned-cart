@@ -5,4 +5,12 @@ export interface PluginOptions {
   templateId: string
   /* subject of the email optional */
   subject?: string
+
+  /** locale as key example de-DE */
+  localization: {
+    [key: string]: {
+      subject?: string
+      templateId: string
+    };
+  }
 }
