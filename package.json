@@ -1,6 +1,6 @@
 {
   "name": "medusa-plugin-abandoned-cart",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "Medusa plugin for abandoned cart tracking and recovery",
   "author": "Lucjan Grzesik (https://github.com/luluhoc)",
   "license": "MIT",
@@ -24,10 +24,11 @@
     "medusa-plugin"
   ],
   "scripts": {
-    "prepublishOnly": "cross-env NODE_ENV=production tsc --build",
-    "test": "jest --passWithNoTests src",
-    "build": "rimraf dist && tsc",
-    "watch": "tsc --watch"
+    "clean": "cross-env ./node_modules/.bin/rimraf dist",
+    "build": "cross-env npm run clean && npm run build:server && npm run build:admin",
+    "build:server": "cross-env npm run clean && tsc -p tsconfig.json",
+    "build:admin": "cross-env medusa-admin build",
+    "prepare": "cross-env NODE_ENV=production npm run build:server && medusa-admin bundle"
   },
   "dependencies": {
     "typeorm": "^0.3.20"
