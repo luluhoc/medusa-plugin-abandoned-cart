@@ -29,7 +29,8 @@
     "build:server": "cross-env npm run clean && tsc -p tsconfig.json",
     "build:admin": "cross-env medusa-admin build",
     "prepare": "cross-env NODE_ENV=production npm run build:server && medusa-admin bundle",
-    "dev": "cross-env npm run build:server && medusa develop"
+    "dev": "cross-env npm run build:server && medusa develop",
+    "prepublishOnly": "yarn build"
   },
   "dependencies": {
     "typeorm": "^0.3.20"

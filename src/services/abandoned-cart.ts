@@ -46,7 +46,7 @@ export default class AbandonedCartService extends TransactionBaseService {
         relations: ["items", "region", "shipping_address"],
       })
 
-      let templateId = this.options_.templateId || "d-aa8ddff84d314c99b5dc4c539e896e7d"
+      let templateId = this.options_.templateId
       let subject = this.options_.subject
       
       if (!notNullCartsPromise) {
@@ -75,12 +75,12 @@ export default class AbandonedCartService extends TransactionBaseService {
       
 
       const emailData = {
-        to: "sklepretrobroker@gmail.com",
+        to: cart.email,
         from: this.options_.from,
-        subject: subject ?? "You left something in your cart",
         templateId: templateId,
         dynamic_template_data: {
           ...cart,
+          subject: subject ?? "You left something in your cart",
         },
       }
       
@@ -96,7 +96,13 @@ export default class AbandonedCartService extends TransactionBaseService {
         message: "Email sent",
       }
     } catch (error) {
-      console.log(error)
+      this.logger.error("Error sending abandoned cart email", {
+        error,
+      })
+      return {
+        success: false,
+        message: "Error sending email",
+      }
     }
   }
 
