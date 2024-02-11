@@ -64,6 +64,8 @@ I strongly recommend using this plugin in combination with the [Medusa Plugin Se
   ]
   ```
 
+  Remember to run migrations after adding the plugin to the `medusa-config.js` file
+
  4\. The Sendgrid Template receives the following:
 
  ```ts
