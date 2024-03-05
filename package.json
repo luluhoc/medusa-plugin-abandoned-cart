@@ -63,7 +63,7 @@
     "@medusajs/medusa": "^1.9.x",
     "medusa-interfaces": "^1.3.x",
     "medusa-plugin-sendgrid": "1.3.12",
-    "medusa-plugin-sendgrid-typescript": "2.0.x",
+    "medusa-plugin-sendgrid-typescript": "2.0.x || 2.1.x",
     "typeorm": "^0.3.16"
   }
 }
