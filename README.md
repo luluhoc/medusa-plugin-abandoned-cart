@@ -26,7 +26,7 @@ I strongly recommend using this plugin in combination with the [Medusa Plugin Se
 
 ## How to Install
 
-1\. Run the following command in the directory of the Medusa backend:
+### 1\. Run the following command in the directory of the Medusa backend:
 
   ```bash
   yarn add medusa-plugin-abandoned-cart
@@ -36,7 +36,7 @@ I strongly recommend using this plugin in combination with the [Medusa Plugin Se
   npm install medusa-plugin-abandoned-cart
   ```
 
-2\. Set the following environment variable in `.env`:
+### 2\. Set the following environment variable in `.env`:
 
   ```bash
   SENDGRID_API_KEY=<API_KEY>
@@ -45,7 +45,7 @@ I strongly recommend using this plugin in combination with the [Medusa Plugin Se
   SENDGRID_ABANDONED_CART_TEMPLATE=<ORDER_PLACED_TEMPLATE_ID> # example
   ```
 
-3\. In `medusa-config.js` add the following at the end of the `plugins` array:
+### 3\. In `medusa-config.js` add the following at the end of the `plugins` array:
 
   ```ts
   const plugins = [
@@ -72,7 +72,7 @@ I strongly recommend using this plugin in combination with the [Medusa Plugin Se
 
   Remember to run migrations after adding the plugin to the `medusa-config.js` file
 
- 4\. The Sendgrid Template receives the following:
+ ### 4\. The Sendgrid Template receives the following:
 
  ```ts
 interface TransformedCart {
@@ -94,11 +94,13 @@ interface TransformedCart {
 }
  ```
 
-5\. The plugin emits the `cart.send-abandoned-email` event when an abandoned cart email is sent. You can listen to this event in your own plugin to perform additional actions with your custom notification provider or perform extra action when using sendgrid.
+### 5\. When an abandoned cart email is sent, the plugin emits the `cart.send-abandoned-email` event.
 
-The Event is sent one time when the button is pressed in the Admin UI.
+You can listen to this event in your plugin to perform additional actions with your custom notification provider or perform extra actions when using Sendgrid.
 
-The Event gets the following payload:
+- The Event is sent one time when the button is pressed in the Admin UI.
+
+- The Event gets the following payload:
 
 ```ts
 {
