@@ -1,6 +1,8 @@
 import { LineItem } from "@medusajs/medusa";
 
 export interface PluginOptions {
+  /* enable sendgrid */
+  sendgridEnabled: boolean
   /* email from which you will be sending */
   from: string
   /* template id from sendgrid */

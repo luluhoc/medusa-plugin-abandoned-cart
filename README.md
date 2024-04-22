@@ -14,6 +14,7 @@ I strongly recommend using this plugin in combination with the [Medusa Plugin Se
 
 - Send emails to customers who have abandoned their carts.
 - Get a list of abandoned carts in Admin.
+- Send emails with other provider (new)
 
 ---
 
@@ -53,6 +54,7 @@ I strongly recommend using this plugin in combination with the [Medusa Plugin Se
       resolve: `medusa-plugin-abandoned-cart`,
       /** @type {import('medusa-plugin-abandoned-cart').PluginOptions} */
       options: {
+        sendgridEnabled: true,
         from: process.env.SENDGRID_FROM,
         subject: "You have something in your cart", // optional
         templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE,
@@ -91,3 +93,16 @@ interface TransformedCart {
   abandoned_cart_notification_count?: number | null
 }
  ```
+
+5\. The plugin emits the `cart.send-abandoned-email` event when an abandoned cart email is sent. You can listen to this event in your own plugin to perform additional actions with your custom notification provider or perform extra action when using sendgrid.
+
+The Event is sent one time when the button is pressed in the Admin UI.
+
+The Event gets the following payload:
+
+```ts
+{
+  id: string; // cart id
+}
+
+```

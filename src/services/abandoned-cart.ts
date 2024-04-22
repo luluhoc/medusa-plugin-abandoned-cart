@@ -1,4 +1,4 @@
-import { Cart, Logger, TransactionBaseService } from "@medusajs/medusa"
+import { Cart, EventBusService, Logger, TransactionBaseService } from "@medusajs/medusa"
 import { Lifetime } from "awilix"
 import CartRepository from "@medusajs/medusa/dist/repositories/cart"
 import { MedusaError } from "medusa-core-utils"
@@ -8,7 +8,8 @@ import { PluginOptions, TransformedCart } from "../types"
 export default class AbandonedCartService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED
   protected cartRepository: typeof CartRepository
-  protected sendGridService: SendGridService
+  protected sendGridService: SendGridService | undefined
+  protected eventBusService: EventBusService | undefined
   logger: Logger
   options_: PluginOptions
 
@@ -18,7 +19,13 @@ export default class AbandonedCartService extends TransactionBaseService {
     try {
       this.sendGridService = container?.sendgridService
     } catch (e) {
-      this.sendGridService = null
+      this.sendGridService = undefined
+    }
+
+    try {
+      this.eventBusService = container?.eventBusService
+    } catch (e) {
+      this.eventBusService = undefined
     }
 
     this.logger = container.logger
@@ -30,9 +37,18 @@ export default class AbandonedCartService extends TransactionBaseService {
   }
 
   async sendAbandonedCartEmail(id: string) {
-    if (!this.sendGridService) {
-      throw new Error("SendGrid service is not available")
+    
+
+    if (!this.options_.sendgridEnabled || !this.sendGridService) {
+      await this.eventBusService.emit("cart.send-abandoned-email", {
+        id,
+      })
+      return {
+        success: true,
+        message: "Event emitted, but SendGrid is not enabled.",
+      }
     }
+    
     try {
       const cartRepo = this.activeManager_.withRepository(this.cartRepository);
       const notNullCartsPromise = await cartRepo.findOne({
@@ -89,6 +105,10 @@ export default class AbandonedCartService extends TransactionBaseService {
         abandoned_cart_notification_sent: true,
         abandoned_cart_notification_date: new Date().toISOString(),
         abandoned_cart_notification_count: (notNullCartsPromise?.abandoned_cart_notification_count || 0) + 1,
+      })
+
+      await this.eventBusService.emit("cart.send-abandoned-email", {
+        id,
       })
 
       return {
