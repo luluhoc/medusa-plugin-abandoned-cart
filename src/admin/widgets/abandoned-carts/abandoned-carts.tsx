@@ -94,23 +94,23 @@ const AbandonedCarts = () => {
             {!isLoading && data ? data.carts.map((cart) => {
               return (
                 <Table.Row
-                  key={cart.id}
+                  key={cart?.id}
                   className="[&_td:last-child]:w-[1%] [&_td:last-child]:whitespace-nowrap"
                 >
                   <Table.Cell>
-                    {cart.first_name + " " + cart.last_name}
+                    {cart?.first_name + " " + cart?.last_name}
                   </Table.Cell>
-                  <Table.Cell>{cart.email}</Table.Cell>
-                  <Table.Cell>{cart.items.length}</Table.Cell>
-                  <Table.Cell>{cart.region_name}</Table.Cell>
+                  <Table.Cell>{cart?.email}</Table.Cell>
+                  <Table.Cell>{cart?.items?.length}</Table.Cell>
+                  <Table.Cell>{cart?.region_name}</Table.Cell>
                   <Table.Cell>
                     {new Date(cart.created_at).toLocaleDateString()}
                   </Table.Cell>
                   <Table.Cell className="text-right">
-                    {new Intl.NumberFormat("en-US", {
+                    {cart?.currency ? new Intl.NumberFormat("en-US", {
                       style: "currency",
-                      currency: cart.currency,
-                    }).format(cart.totalPrice / 100)}
+                      currency: cart?.currency || "USD",
+                    }).format(cart?.totalPrice / 100) : cart?.totalPrice}
                   </Table.Cell>
                   <Table.Cell className="text-ui-fg-muted">
                     <ReactCountryFlag
@@ -119,17 +119,17 @@ const AbandonedCarts = () => {
                         fontSize: "1.5em",
                         lineHeight: "1.5em",
                       }}
-                      title={cart.region_name}
+                      title={cart?.region_name}
                     />
                   </Table.Cell>
                   <Table.Cell>
                     {cart?.abandoned_cart_notification_sent ? new Date(cart?.abandoned_cart_notification_date).toLocaleDateString() : "Not Sent"}
                   </Table.Cell>
                   <Table.Cell>
-                    {cart?.abandoned_cart_notification_sent ? cart.abandoned_cart_notification_count : 0}
+                    {cart?.abandoned_cart_notification_sent ? cart?.abandoned_cart_notification_count : 0}
                   </Table.Cell>
                   <Table.Cell><Button disabled={PostLoading} variant="transparent" onClick={() => {
-                    handleAction(cart.id);
+                    handleAction(cart?.id);
                   }}>Send Email</Button></Table.Cell>
                 </Table.Row>
               );
