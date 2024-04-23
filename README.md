@@ -108,3 +108,77 @@ You can listen to this event in your plugin to perform additional actions with y
 }
 
 ```
+Check medusa docs https://docs.medusajs.com/development/events/create-subscriber
+
+#### Example
+
+```
+import { 
+  ProductService,
+  type SubscriberConfig, 
+  type SubscriberArgs, 
+} from "@medusajs/medusa"
+import { EntityManager } from "typeorm";
+import { MedusaError } from 'medusa-core-utils';
+import { TransformedCart } from "medusa-abandoned-cart-plugin";
+import SendGridService from "medusa-plugin-sendgrid-typescript/dist/services/sendgrid";
+
+export default async function abandonedEmailHandler({ 
+  data, eventName, container, pluginOptions, 
+}: SubscriberArgs<Record<string, any>>) {
+  const manager: EntityManager = container.resolve("manager")
+  const cartRepo = manager.getRepository(Cart)
+  const abandonedCartService: AbandonedCartService = container.resolve("abandonedCartService")
+  const sendGridService: SendGridService = container.resolve("sendGridService")
+
+  const { id } = data
+
+  const notNullCartsPromise = await cartRepo.findOne({
+    where: {
+      id,
+    },
+    order: {
+      created_at: "DESC",
+    },
+    select: ["id", "email", "created_at", "region", "context", "abandoned_cart_notification_count"],
+    relations: ["items", "region", "shipping_address"],
+  })
+
+  if (!notNullCartsPromise) {
+    throw new MedusaError("Not Found", "Cart not found")
+  }
+  // do something with the cart...
+
+  // Transform the cart to the format needed for the email template this is mandatory depending on email template and provider
+  const cart = abandonedCartService.transformCart(notNullCartsPromise) as TransformedCart
+
+  const emailData = {
+    to: cart.email,
+    from: this.options_.from,
+    templateId: "d-1234567890abcdef",
+    dynamic_template_data: {
+      ...cart,
+    },
+  }
+
+  // Send email using sendgrid
+  await this.sendGridService.sendEmail(emailData)
+
+  // Update the cart to reflect that the email has been sent
+  await cartRepo.update(cart.id, {
+    abandoned_cart_notification_sent: true,
+    abandoned_cart_notification_date: new Date().toISOString(),
+    abandoned_cart_notification_count: (notNullCartsPromise?.abandoned_cart_notification_count || 0) + 1,
+  })
+
+}
+
+export const config: SubscriberConfig = {
+  event: "cart.send-abandoned-email",
+  context: {
+    subscriberId: "abandoned-email-handler",
+  },
+}
+
+```
+
