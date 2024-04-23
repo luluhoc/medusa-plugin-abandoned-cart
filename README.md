@@ -112,7 +112,7 @@ Check medusa docs https://docs.medusajs.com/development/events/create-subscriber
 
 #### Example
 
-```
+```ts
 import { 
   ProductService,
   type SubscriberConfig, 
