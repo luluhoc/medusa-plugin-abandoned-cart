@@ -4,13 +4,11 @@ import { useAdminCustomQuery, useAdminCustomPost } from "medusa-react";
 import ReactCountryFlag from "react-country-flag";
 import React from "react";
 import { AbandonedCartResponse } from "../../types/abandoned-cart";
-import { useToast } from "@medusajs/ui"
+import { toast } from "@medusajs/ui"
 import LineLoading from "../../components/line-loading";;
 import { Toaster } from "@medusajs/ui"
 
 const AbandonedCarts = () => {
-  
-  const {toast} = useToast();
 
   const [pageSize, setPageSize] = React.useState(15);
   const [currentPage, setCurrentPage] = React.useState(0);
@@ -49,20 +47,14 @@ const AbandonedCarts = () => {
   const handleAction = (id: string) => {
     mutate({ id }, {
       onSuccess: (data) => {
-          toast({
-            title: "Email sent",
-            variant: "success",
-          })
+        console.log(data);
+          toast.info("Email sent")
           refetch();
       },
       onError: (error) => {
         console.log(error);
         console.log(error.message);
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "error",
-        });
+        toast.error("Error sending email");
       },
     
     });
