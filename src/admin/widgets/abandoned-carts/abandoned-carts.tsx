@@ -49,6 +49,7 @@ const AbandonedCarts = () => {
   const handleAction = (id: string) => {
     mutate({ id }, {
       onSuccess: (data) => {
+        console.log(data);
           toast({
             title: "Email sent",
             variant: "success",

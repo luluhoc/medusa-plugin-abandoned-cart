@@ -33,9 +33,9 @@ export async function POST(
       throw new Error("No id provided");
     }
 
-    await abandonedCartService.sendAbandonedCartEmail(req.body.id);
+    const r = await abandonedCartService.sendAbandonedCartEmail(req.body.id);
 
-    res.status(200).json({ success: true });
+    res.status(200).json(r);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

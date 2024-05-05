@@ -37,9 +37,9 @@ export default class AbandonedCartService extends TransactionBaseService {
   }
 
   async sendAbandonedCartEmail(id: string) {
-    
-
+    this.logger.info("Sending abandoned cart email")
     if (!this.options_.sendgridEnabled || !this.sendGridService) {
+      this.logger.info("SendGrid is not enabled, emitting event")
       await this.eventBusService.emit("cart.send-abandoned-email", {
         id,
       })
@@ -69,7 +69,7 @@ export default class AbandonedCartService extends TransactionBaseService {
         throw new MedusaError("Not Found", "Cart not found")
       }
 
-      const cart = this.transformCart(notNullCartsPromise)  as TransformedCart
+      const cart = this.transformCart(notNullCartsPromise) as TransformedCart
 
       if (this.options_.localization) {
         const locale = this.getCartLocale(cart)

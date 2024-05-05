@@ -9,7 +9,10 @@ export interface PluginOptions {
   templateId: string
   /* subject of the email optional */
   subject?: string
-
+  /* automated @default false*/
+  automated: boolean
+  /* times of emails*/
+  cron: string[]
   /** locale as key example de-DE */
   localization: {
     [key: string]: {

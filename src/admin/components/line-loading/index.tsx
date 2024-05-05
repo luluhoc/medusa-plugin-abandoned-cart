@@ -16,6 +16,7 @@ const LineLoading = () => {
                   <Table.Cell className="text-right"></Table.Cell>
                   <Table.Cell className="text-ui-fg-muted"></Table.Cell>
                   <Table.Cell></Table.Cell>
+                  <Table.Cell></Table.Cell>
                 </Table.Row>
   ))}
   </>
