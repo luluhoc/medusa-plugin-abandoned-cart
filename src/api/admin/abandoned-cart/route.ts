@@ -21,7 +21,9 @@ export async function GET(
 }
 
 export async function POST(
-  req: MedusaRequest,
+  req: MedusaRequest<{
+    id?: string;  
+  }>,
   res: MedusaResponse
 ): Promise<void> {
   try {
