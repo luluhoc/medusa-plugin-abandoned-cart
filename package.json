@@ -33,7 +33,7 @@
     "prepublishOnly": "yarn build"
   },
   "dependencies": {
-    "timestring": "^7.0.0",
+    "parse-duration": "^1.1.0",
     "typeorm": "^0.3.20"
   },
   "devDependencies": {

@@ -1,6 +1,6 @@
 import { LineItem } from "@medusajs/medusa";
 
-export interface PluginOptions {
+export interface BasePluginOptions {
   /* enable sendgrid */
   sendgridEnabled: boolean
   /* email from which you will be sending */
@@ -9,11 +9,26 @@ export interface PluginOptions {
   templateId: string
   /* subject of the email optional */
   subject?: string
-  /* automated @default false*/
-  automated: boolean
-  /* times of emails*/
-  cron: string[]
-  /** locale as key example de-DE */
+}
+
+export interface IntervalOptions {
+  interval: string | number
+  subject?: string
+  templateId?: string
+  localization?: {
+    [key: string]: {
+      subject?: string
+      templateId: string
+    };
+  }
+
+}
+
+export interface AutomatedAbandonedCart extends BasePluginOptions {
+  intervals?: Array<IntervalOptions>,
+}
+
+export interface ManualAbandonedCart extends BasePluginOptions {
   localization: {
     [key: string]: {
       subject?: string
@@ -21,6 +36,9 @@ export interface PluginOptions {
     };
   }
 }
+
+export type PluginOptions = AutomatedAbandonedCart | ManualAbandonedCart
+
 
 export interface TransformedCart {
   id: string;
@@ -35,7 +53,8 @@ export interface TransformedCart {
   region: string;
   country_code: string;
   region_name: string;
-  abandoned_cart_notification_date?: string | null
-  abandoned_cart_notification_sent?: boolean | null
-  abandoned_cart_notification_count?: number | null
+  abandoned_count?: number;
+  abandoned_lastdate?: Date;
+  abandoned_last_interval?: string;
+  abandoned_completed_at?: Date;
 }

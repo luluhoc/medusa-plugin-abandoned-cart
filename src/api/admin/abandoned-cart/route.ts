@@ -10,9 +10,9 @@ export async function GET(
       "abandonedCartService"
     );
 
-    const { take, skip } = req.query as { take: string; skip: string };
+    const { take, skip, dateLimit } = req.query as { take: string; skip: string, dateLimit: string};
 
-    const carts = await abandonedCartService.retrieveAbandonedCarts(take, skip);
+    const carts = await abandonedCartService.retrieveAbandonedCarts(take, skip, +dateLimit);
 
     res.status(200).json({ carts: carts.abandoned_carts, count: carts.total_carts });
   } catch (error) {

@@ -15,9 +15,9 @@ export interface AbandonedCart {
   region:      string;
   region_name: string;
   totalPrice:  number;
-  abandoned_cart_notification_count: number;
-  abandoned_cart_notification_date: Date;
-  abandoned_cart_notification_sent: boolean;
+  abandoned_count: number;
+  abandoned_lastdate: Date;
+  abandoned_last_interval: string;
 }
 
 export interface Item {

@@ -16,11 +16,13 @@ const AbandonedCarts = () => {
     {
       take: number;
       skip: number;
+      dateLimit?: number;
     },
     AbandonedCartResponse
   >("/abandoned-cart", [], {
     take: pageSize,
     skip: pageSize * currentPage,
+    dateLimit: 10,
   });
 
   const { mutate, isLoading: PostLoading } = useAdminCustomPost<
@@ -115,10 +117,10 @@ const AbandonedCarts = () => {
                     />
                   </Table.Cell>
                   <Table.Cell>
-                    {cart?.abandoned_cart_notification_sent ? new Date(cart?.abandoned_cart_notification_date).toLocaleDateString() : "Not Sent"}
+                    {cart?.abandoned_count ? new Date(cart?.abandoned_lastdate).toLocaleDateString() : "Not Sent"}
                   </Table.Cell>
                   <Table.Cell>
-                    {cart?.abandoned_cart_notification_sent ? cart?.abandoned_cart_notification_count : 0}
+                    {cart?.abandoned_count ? cart?.abandoned_count : 0}
                   </Table.Cell>
                   <Table.Cell><Button disabled={PostLoading} variant="transparent" onClick={() => {
                     handleAction(cart?.id);
