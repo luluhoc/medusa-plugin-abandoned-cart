@@ -14,7 +14,6 @@ export default async function handler({
   pluginOptions,
 }: ScheduledJobArgs) {
   const ids_to_complete = []
-  const sent_emails = 0;
   const abandonedCartService: AbandonedCartService = container.resolve(
     "abandonedCartService"
   )
@@ -130,6 +129,6 @@ export default async function handler({
 
 export const config: ScheduledJobConfig = {
   name: "schedule-abandoned",
-  schedule: "* * * * *",
+  schedule: "*/5 * * * *",
   data: {},
 }

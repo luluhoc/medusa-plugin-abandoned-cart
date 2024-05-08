@@ -1,5 +1,7 @@
 # Medusa Abandoned Cart Plugin
 
+## Still in beta proceed with caution
+
 ## 2.0.0 - Contains breaking changes. Please read the documentation carefully
 
 You can now send emails with other providers and schedule the task to send emails.
@@ -20,7 +22,7 @@ I strongly recommend using this plugin in combination with the [Medusa Plugin Se
 - Send emails to customers who have abandoned their carts manualy.
 - Get a list of abandoned carts in Admin.
 - Send emails with other provider (new)
-- Send emails with scheduled task (new)
+- Send emails with scheduled task (new) cron job runs every 5 minutes.
 
 ---
 
@@ -63,11 +65,11 @@ I strongly recommend using this plugin in combination with the [Medusa Plugin Se
       sendgridEnabled: true,
       from: process.env.SENDGRID_FROM,
       enableUI: true,
-      subject: "You have something in your cart", // optional
+      subject: "You have something in your cart",
       templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE,
-      days_to_track: 400,
+      days_to_track: 7,
       set_as_completed_if_overdue: true,
-      max_overdue: "400d",
+      max_overdue: "2h",
       intervals: [
       {
         interval: "1h",
