@@ -1,16 +1,51 @@
 import { LineItem } from "@medusajs/medusa";
 
-export interface PluginOptions {
+export interface BasePluginOptions {
   /* enable sendgrid */
   sendgridEnabled: boolean
   /* email from which you will be sending */
   from: string
   /* template id from sendgrid */
   templateId: string
+  /* number of days to track */
+  days_to_track?: number
   /* subject of the email optional */
   subject?: string
+  localization?: {
+    [key: string]: {
+      subject?: string
+      templateId: string
+    };
+  }
+}
 
-  /** locale as key example de-DE */
+export interface IntervalOptions {
+  /* interval example string "1d", "1h", "30m" 
+  check parse-duration package for more examples */
+  interval: string | number
+  /* subject of the email optional */
+  subject?: string
+  /* template id from sendgrid */
+  templateId?: string
+  localization?: {
+    [key: string]: {
+      subject?: string
+      templateId: string
+    };
+  }
+
+}
+
+export interface AutomatedAbandonedCart extends BasePluginOptions {
+  /* intervals */
+  intervals: Array<IntervalOptions>,
+  /* max overdue @default "2h"*/
+  max_overdue: string
+  /* set as completed if overdue */
+  set_as_completed_if_overdue: boolean
+}
+
+export interface ManualAbandonedCart extends BasePluginOptions {
   localization: {
     [key: string]: {
       subject?: string
@@ -18,6 +53,9 @@ export interface PluginOptions {
     };
   }
 }
+
+export type PluginOptions = AutomatedAbandonedCart | ManualAbandonedCart
+
 
 export interface TransformedCart {
   id: string;
@@ -32,7 +70,8 @@ export interface TransformedCart {
   region: string;
   country_code: string;
   region_name: string;
-  abandoned_cart_notification_date?: string | null
-  abandoned_cart_notification_sent?: boolean | null
-  abandoned_cart_notification_count?: number | null
+  abandoned_count?: number;
+  abandoned_lastdate?: Date;
+  abandoned_last_interval?: number;
+  abandoned_completed_at?: Date;
 }

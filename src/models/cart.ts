@@ -6,10 +6,15 @@ import {
 
 @Entity()
 export class Cart extends MedusaCart {
-  @Column({type: "varchar"})
-  abandoned_cart_notification_date?: string | null
-  @Column({type: "boolean"})
-  abandoned_cart_notification_sent?: boolean | null
-  @Column({type: "int", default: 0})
-  abandoned_cart_notification_count?: number | null
+  @Column({ type: "timestamptz", nullable: true })
+  abandoned_completed_at?: Date
+
+  @Column({ type: "int", nullable: true })
+  abandoned_count?: number
+
+  @Column({ type: "bigint", nullable: true })
+  abandoned_last_interval?: number
+
+  @Column({ type: "timestamptz", nullable: true })
+  abandoned_lastdate?: Date
 }

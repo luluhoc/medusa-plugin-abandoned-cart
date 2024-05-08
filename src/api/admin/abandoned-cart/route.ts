@@ -10,9 +10,9 @@ export async function GET(
       "abandonedCartService"
     );
 
-    const { take, skip } = req.query as { take: string; skip: string };
+    const { take, skip, dateLimit } = req.query as { take: string; skip: string, dateLimit: string};
 
-    const carts = await abandonedCartService.retrieveAbandonedCarts(take, skip);
+    const carts = await abandonedCartService.retrieveAbandonedCarts(take, skip, +dateLimit, true);
 
     res.status(200).json({ carts: carts.abandoned_carts, count: carts.total_carts });
   } catch (error) {
@@ -22,7 +22,7 @@ export async function GET(
 
 export async function POST(
   req: MedusaRequest<{
-    id?: string;
+    id?: string;  
   }>,
   res: MedusaResponse
 ): Promise<void> {
@@ -35,9 +35,9 @@ export async function POST(
       throw new Error("No id provided");
     }
 
-    await abandonedCartService.sendAbandonedCartEmail(req.body.id);
+    const r = await abandonedCartService.sendAbandonedCartEmail(req.body.id);
 
-    res.status(200).json({ success: true });
+    res.status(200).json(r);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
