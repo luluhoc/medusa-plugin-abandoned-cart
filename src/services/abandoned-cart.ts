@@ -76,6 +76,7 @@ export default class AbandonedCartService extends TransactionBaseService {
       this.logger.info("SendGrid is not enabled, emitting event")
       await this.eventBusService.emit("cart.send-abandoned-email", {
         id,
+        interval,
       });
       return {
         success: true,
@@ -174,6 +175,7 @@ export default class AbandonedCartService extends TransactionBaseService {
 
       const eventPromise = this.eventBusService.emit("cart.send-abandoned-email", {
         id,
+        interval,
       });
       this.logger.info(`Sending email for cart ${id}`);
       await Promise.all([emailPromise, cartPromise, eventPromise]);

@@ -229,7 +229,8 @@ You can listen to this event in your plugin to perform additional actions with y
 }
 
 ```
-Check medusa docs https://docs.medusajs.com/development/events/create-subscriber
+
+Check medusa docs <https://docs.medusajs.com/development/events/create-subscriber>
 
 #### Example
 
@@ -252,7 +253,7 @@ export default async function abandonedEmailHandler({
   const abandonedCartService: AbandonedCartService = container.resolve("abandonedCartService")
   const sendGridService: SendGridService = container.resolve("sendGridService")
 
-  const { id } = data
+  const { id, interval } = data
 
   const notNullCartsPromise = await cartRepo.findOne({
     where: {
@@ -261,7 +262,7 @@ export default async function abandonedEmailHandler({
     order: {
       created_at: "DESC",
     },
-    select: ["id", "email", "created_at", "region", "context", "abandoned_cart_notification_count"],
+    select: ["id", "email", "created_at", "region", "context", "abandoned_count"],
     relations: ["items", "region", "shipping_address"],
   })
 
@@ -283,15 +284,18 @@ export default async function abandonedEmailHandler({
   }
 
   // Send email using sendgrid
-  await this.sendGridService.sendEmail(emailData)
+  const sendGridPromise = this.sendGridService.sendEmail(emailData)
 
   // Update the cart to reflect that the email has been sent
-  await cartRepo.update(cart.id, {
-    abandoned_cart_notification_sent: true,
-    abandoned_cart_notification_date: new Date().toISOString(),
-    abandoned_cart_notification_count: (notNullCartsPromise?.abandoned_cart_notification_count || 0) + 1,
-  })
+  const repoPromise = cartRepo.update(cart.id, {
+        abandoned_lastdate: new Date().toISOString(),
+        abandoned_count: (notNullCartsPromise?.abandoned_count || 0) + 1,
+        abandoned_last_interval: interval || undefined,
+        abandoned_completed_at: interval && pluginOptions.intervals[pluginOptions.intervals.length - 1].interval === interval ? new Date().toISOString() : undefined,
+      });
 
+  await Promise.all([sendGridPromise, repoPromise])
+  
 }
 
 export const config: SubscriberConfig = {
@@ -302,4 +306,3 @@ export const config: SubscriberConfig = {
 }
 
 ```
-
