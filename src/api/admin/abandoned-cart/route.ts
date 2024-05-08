@@ -12,7 +12,7 @@ export async function GET(
 
     const { take, skip, dateLimit } = req.query as { take: string; skip: string, dateLimit: string};
 
-    const carts = await abandonedCartService.retrieveAbandonedCarts(take, skip, +dateLimit);
+    const carts = await abandonedCartService.retrieveAbandonedCarts(take, skip, +dateLimit, true);
 
     res.status(200).json({ carts: carts.abandoned_carts, count: carts.total_carts });
   } catch (error) {

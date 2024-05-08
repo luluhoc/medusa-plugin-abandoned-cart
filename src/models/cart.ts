@@ -12,8 +12,8 @@ export class Cart extends MedusaCart {
   @Column({ type: "int", nullable: true })
   abandoned_count?: number
 
-  @Column({ type: "varchar", nullable: true })
-  abandoned_last_interval?: string
+  @Column({ type: "bigint", nullable: true })
+  abandoned_last_interval?: number
 
   @Column({ type: "timestamptz", nullable: true })
   abandoned_lastdate?: Date

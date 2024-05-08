@@ -38,7 +38,7 @@ export default class AbandonedCartService extends TransactionBaseService {
     } catch (e) {
       this.eventBusService = undefined;
     }
-    const op = options as AutomatedAbandonedCart
+    let op = options as AutomatedAbandonedCart
     let sorted: IntervalOptions[] = [];
     this.checkTypeOfOptions(options) && (sorted = op.intervals.sort((
       a,
@@ -52,7 +52,7 @@ export default class AbandonedCartService extends TransactionBaseService {
     }))
 
     if (this.checkTypeOfOptions(options) && op.intervals && sorted.length > 0) {
-      this.options_ = {
+      op = {
         ...op,
         intervals: sorted.map((i) => {
           return {
@@ -62,17 +62,16 @@ export default class AbandonedCartService extends TransactionBaseService {
         })
       }
     }
-
+   
     this.logger = container.logger;
     this.options_ =  this.checkTypeOfOptions(options) ? op : options;
-    
   }
 
   getCartLocale(cart: TransformedCart): string {
     return (cart?.cart_context?.locale as string) || "en";
   }
 
-  async sendAbandonedCartEmail(id: string, interval?: string) {
+  async sendAbandonedCartEmail(id: string, interval?: number) {
     if (!this.options_.sendgridEnabled || !this.sendGridService) {
       this.logger.info("SendGrid is not enabled, emitting event")
       await this.eventBusService.emit("cart.send-abandoned-email", {
@@ -112,19 +111,20 @@ export default class AbandonedCartService extends TransactionBaseService {
       }
 
       const cart = this.transformCart(notNullCartsPromise) as TransformedCart;
+      
+      const locale = this.getCartLocale(cart);
 
       if (
         !this.checkTypeOfOptions(this.options_) &&
         this.options_.localization
       ) {
-        const locale = this.getCartLocale(cart);
         const localeOptions = this.options_.localization[locale];
 
         if (localeOptions) {
           templateId = localeOptions.templateId;
           subject = localeOptions.subject ?? subject;
         }
-      } else if (this.checkTypeOfOptions(this.options_)) {
+      } else if (this.checkTypeOfOptions(this.options_) && interval !== undefined) {
         const intervalOptions = this.options_.intervals.find(
           (i) => i.interval === interval,
         );
@@ -134,7 +134,6 @@ export default class AbandonedCartService extends TransactionBaseService {
           subject = intervalOptions.subject ?? subject;
 
           if (intervalOptions.localization) {
-            const locale = this.getCartLocale(cart);
             const localeOptions = intervalOptions.localization[locale];
 
             if (localeOptions) {
@@ -163,18 +162,22 @@ export default class AbandonedCartService extends TransactionBaseService {
         },
       };
 
-      await this.sendGridService.sendEmail(emailData);
-      await cartRepo.update(cart.id, {
+      const emailPromise = this.sendGridService.sendEmail(emailData);
+      // const emailPromise = Promise.resolve({});
+
+      const cartPromise = cartRepo.update(cart.id, {
         abandoned_lastdate: new Date().toISOString(),
         abandoned_count: (notNullCartsPromise?.abandoned_count || 0) + 1,
         abandoned_last_interval: interval || undefined,
         abandoned_completed_at: this.checkTypeOfOptions(this.options_) && this.options_.intervals[this.options_.intervals.length - 1].interval === interval ? new Date().toISOString() : undefined,
       });
 
-      await this.eventBusService.emit("cart.send-abandoned-email", {
+      const eventPromise = this.eventBusService.emit("cart.send-abandoned-email", {
         id,
       });
-
+      this.logger.info(`Sending email for cart ${id}`);
+      await Promise.all([emailPromise, cartPromise, eventPromise]);
+      
       return {
         success: true,
         message: "Email sent",
@@ -190,7 +193,7 @@ export default class AbandonedCartService extends TransactionBaseService {
     }
   }
 
-  private checkTypeOfOptions = (
+  checkTypeOfOptions = (
     options: PluginOptions,
   ): options is AutomatedAbandonedCart => {
     return (options as AutomatedAbandonedCart).intervals !== undefined;
@@ -201,6 +204,7 @@ export default class AbandonedCartService extends TransactionBaseService {
     take: number,
     skip: number,
     dateLimit?: number,
+    fromAdmin?: boolean,
   ): Promise<Cart[]> | Promise<Number> => {
     const cartRepo = this.activeManager_.withRepository(this.cartRepository);
     return cartRepo
@@ -215,9 +219,9 @@ export default class AbandonedCartService extends TransactionBaseService {
       .andWhere("cart.deleted_at IS NULL")
       .andWhere("cart.completed_at IS NULL")
       .andWhere(
-        `cart.created_at > now() - interval '1 day' * ${dateLimit || 7}`,
+        !fromAdmin ? `cart.created_at > now() - interval '1 day' * ${dateLimit || 7}` : "cart.created_at IS NOT NULL",
       )
-      .andWhere("cart.abandoned_completed_at IS NULL")
+      .andWhere(!fromAdmin ? "cart.abandoned_completed_at IS NULL": "cart.email IS NOT NULL")
       .andWhere("items.id IS NOT NULL") // Ensure there are items related to the cart
       .orderBy("cart.created_at", "DESC")
       .select([
@@ -238,10 +242,24 @@ export default class AbandonedCartService extends TransactionBaseService {
       [type]();
   };
 
+  async setCartsAsCompleted(cartsIds: string[]) {
+    if (cartsIds.length === 0) {
+      return;
+    }
+    const cartRepo = this.activeManager_.withRepository(this.cartRepository);
+
+    this.logger.info(`Completing ${cartsIds.length} abandoned carts`);
+    await cartRepo.update(cartsIds, {
+      abandoned_completed_at: new Date().toISOString(),
+    });
+
+  }
+
   async retrieveAbandonedCarts(
     take: string | number = 200,
     skip: string | number = 0,
     dateLimit: number = 7,
+    fromAdmin = false,
   ) {
     const takeNumber = +take;
 
@@ -260,20 +278,23 @@ export default class AbandonedCartService extends TransactionBaseService {
       "getCount",
       takeNumber,
       skipNumber,
-      dateLimit,
+      +dateLimit,
+      fromAdmin,
     ) as Promise<Number>;
 
     const notNullCartsPromises = this.queryBuilder(
       "getMany",
       takeNumber,
       skipNumber,
-      dateLimit,
+      +dateLimit,
+      fromAdmin,
     ) as Promise<Cart[]>;
 
     const [totalCarts, carts] = await Promise.all([
       totalCartsPromise,
       notNullCartsPromises,
     ]);
+
     const transformedCarts = this.transformCart(carts);
     return {
       abandoned_carts: transformedCarts,
