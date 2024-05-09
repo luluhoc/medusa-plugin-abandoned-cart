@@ -17,6 +17,7 @@ jobs:
         with:
           node-version: 16
       - run: npm i -g cross-env
+      - run: yarn install
       - run: yarn build
 
   publish-npm:
