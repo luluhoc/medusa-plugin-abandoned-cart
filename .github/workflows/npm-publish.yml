@@ -4,9 +4,9 @@
 name: Node.js Package
 
 on:
- workflow_dispatch:
-  # release:
-  #   types: [created]
+ # workflow_dispatch:
+  release:
+    types: [created]
 
 jobs:
   build:
@@ -29,6 +29,6 @@ jobs:
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org/
-      - run: npm publish --ignore-prepublish
+      - run: npm publish --ignore-scripts
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
