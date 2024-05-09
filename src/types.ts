@@ -57,10 +57,14 @@ export interface ManualAbandonedCart extends BasePluginOptions {
 export type PluginOptions = AutomatedAbandonedCart | ManualAbandonedCart
 
 
+export type NewLineItem = Omit<LineItem, "beforeUpdate" | "afterUpdateOrLoad"> & {
+  price: string
+}
+
 export interface TransformedCart {
   id: string;
   email: string;
-  items: LineItem[];
+  items: NewLineItem[];
   cart_context: Record<string, unknown>;
   first_name: string;
   last_name: string;

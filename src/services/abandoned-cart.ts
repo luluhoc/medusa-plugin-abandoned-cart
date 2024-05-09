@@ -6,8 +6,9 @@ import {
 } from "@medusajs/medusa";
 import { Lifetime } from "awilix";
 import CartRepository from "@medusajs/medusa/dist/repositories/cart";
-import { MedusaError } from "medusa-core-utils";
+import { MedusaError, humanizeAmount, zeroDecimalCurrencies } from "medusa-core-utils";
 import type SendGridService from "medusa-plugin-sendgrid-typescript/dist/services/sendgrid";
+
 import {
   AutomatedAbandonedCart,
   IntervalOptions,
@@ -201,6 +202,17 @@ export default class AbandonedCartService extends TransactionBaseService {
     return (options as AutomatedAbandonedCart).intervals !== undefined;
   };
 
+  humanPrice_(amount: number | null | undefined, currency: string) {
+    if (!amount) {
+      return "0.00"
+    }
+
+    const normalized = humanizeAmount(amount, currency)
+    return normalized.toFixed(
+      zeroDecimalCurrencies.includes(currency.toLowerCase()) ? 0 : 2
+    )
+  }
+
   queryBuilder = (
     type: "getCount" | "getMany",
     take: number,
@@ -313,7 +325,15 @@ export default class AbandonedCartService extends TransactionBaseService {
     return {
       id: cart.id,
       email: cart.email,
-      items: cart.items,
+      items: cart.items.map((item) => {
+        return {
+          ...item,
+          price: `${this.humanPrice_(
+            item.unit_price,
+            cart.region.currency_code
+          )} ${cart.region.currency_code}`,
+        }
+      }),
       cart_context: cart.context,
       first_name: cart.shipping_address?.first_name,
       last_name: cart.shipping_address?.last_name,
@@ -321,6 +341,7 @@ export default class AbandonedCartService extends TransactionBaseService {
         (acc, item) => acc + item.unit_price * item.quantity,
         0,
       ),
+      
       created_at: cart.created_at,
       currency: cart.region.currency_code,
       region: cart.region.id,

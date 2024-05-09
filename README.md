@@ -195,10 +195,16 @@ I strongly recommend using this plugin in combination with the [Medusa Plugin Se
 ### 4\. The Sendgrid Template receives the following
 
  ```ts
-interface TransformedCart {
+export type NewLineItem = Omit<LineItem, "beforeUpdate" | "afterUpdateOrLoad"> & {
+  // human readable price with currency code
+  price: string
+}
+
+// The cart object is transformed to this format before sending the email
+export interface TransformedCart {
   id: string;
   email: string;
-  items: LineItem[];
+  items: NewLineItem[];
   cart_context: Record<string, unknown>;
   first_name: string;
   last_name: string;
