@@ -7,6 +7,8 @@ export interface BasePluginOptions {
   from: string
   /* template id from sendgrid */
   templateId: string
+  /* header line of the email optional */
+  header?: string
   /* number of days to track */
   days_to_track?: number
   /* subject of the email optional */
@@ -14,6 +16,7 @@ export interface BasePluginOptions {
   localization?: {
     [key: string]: {
       subject?: string
+      header?: string
       templateId: string
     };
   }
@@ -25,11 +28,13 @@ export interface IntervalOptions {
   interval: string | number
   /* subject of the email optional */
   subject?: string
+  header?: string
   /* template id from sendgrid */
   templateId?: string
   localization?: {
     [key: string]: {
       subject?: string
+      header?: string
       templateId: string
     };
   }
@@ -49,6 +54,7 @@ export interface ManualAbandonedCart extends BasePluginOptions {
   localization: {
     [key: string]: {
       subject?: string
+      header?: string
       templateId: string
     };
   }
@@ -78,4 +84,6 @@ export interface TransformedCart {
   abandoned_lastdate?: Date;
   abandoned_last_interval?: number;
   abandoned_completed_at?: Date;
+  subject?: string;
+  header?: string;
 }

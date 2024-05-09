@@ -142,6 +142,8 @@ I strongly recommend using this plugin in combination with the [Medusa Plugin Se
       from: string
       /* template id from sendgrid */
       templateId: string
+      /* header line of the email optional */
+      header?: string
       /* number of days to track */
       days_to_track?: number
       /* subject of the email optional */
@@ -149,6 +151,7 @@ I strongly recommend using this plugin in combination with the [Medusa Plugin Se
       localization?: {
         [key: string]: {
           subject?: string
+          header?: string
           templateId: string
         };
       }
@@ -165,6 +168,7 @@ I strongly recommend using this plugin in combination with the [Medusa Plugin Se
       localization?: {
         [key: string]: {
           subject?: string
+          header?: string
           templateId: string
         };
       }
@@ -184,6 +188,7 @@ I strongly recommend using this plugin in combination with the [Medusa Plugin Se
       localization: {
         [key: string]: {
           subject?: string
+          header?: string
           templateId: string
         };
       }

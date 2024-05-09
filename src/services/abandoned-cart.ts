@@ -105,8 +105,9 @@ export default class AbandonedCartService extends TransactionBaseService {
         relations: ["items", "region", "shipping_address"],
       });
 
-      let templateId = this.options_.templateId;
-      let subject = this.options_.subject;
+      let templateId = this.options_?.templateId;
+      let subject = this.options_?.subject;
+      let header = this.options_?.header;
 
       if (!notNullCartsPromise) {
         throw new MedusaError("Not Found", "Cart not found");
@@ -125,6 +126,7 @@ export default class AbandonedCartService extends TransactionBaseService {
         if (localeOptions) {
           templateId = localeOptions.templateId;
           subject = localeOptions.subject ?? subject;
+          header = localeOptions.header ?? header;
         }
       } else if (this.checkTypeOfOptions(this.options_) && interval !== undefined) {
         const intervalOptions = this.options_.intervals.find(
@@ -134,6 +136,7 @@ export default class AbandonedCartService extends TransactionBaseService {
         if (intervalOptions) {
           templateId = intervalOptions.templateId;
           subject = intervalOptions.subject ?? subject;
+          header = intervalOptions.header ?? header;
 
           if (intervalOptions.localization) {
             const localeOptions = intervalOptions.localization[locale];
@@ -141,6 +144,7 @@ export default class AbandonedCartService extends TransactionBaseService {
             if (localeOptions) {
               templateId = localeOptions.templateId;
               subject = localeOptions.subject ?? subject;
+              header = localeOptions.header ?? header;
             }
           }
         }
@@ -161,6 +165,7 @@ export default class AbandonedCartService extends TransactionBaseService {
         dynamic_template_data: {
           ...cart,
           subject: subject ?? "You left something in your cart",
+          header: header ?? "You left something in your cart",
         },
       };
 
