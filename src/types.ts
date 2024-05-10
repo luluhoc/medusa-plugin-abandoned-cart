@@ -4,7 +4,7 @@ export interface BasePluginOptions {
   /* enable sendgrid */
   sendgridEnabled: boolean
   /* email from which you will be sending */
-  from: string
+  from: { name?: string; email: string } | string
   /* template id from sendgrid */
   templateId: string
   /* header line of the email optional */

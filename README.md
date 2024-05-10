@@ -2,7 +2,7 @@
 
 ## Still in beta proceed with caution
 
-## 2.0.0 - Contains breaking changes. Please read the documentation carefully
+## v2.0.0 - Contains breaking changes. Please read the documentation carefully
 
 You can now send emails with other providers and schedule the task to send emails.
 Remember to run migrations after adding the plugin to the `medusa-config.js` file
@@ -139,7 +139,7 @@ I strongly recommend using this plugin in combination with the [Medusa Plugin Se
       /* enable sendgrid */
       sendgridEnabled: boolean
       /* email from which you will be sending */
-      from: string
+      from: { name?: string; email: string } | string
       /* template id from sendgrid */
       templateId: string
       /* header line of the email optional */
