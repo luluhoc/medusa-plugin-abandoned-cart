@@ -116,10 +116,9 @@ export default class AbandonedCartService extends TransactionBaseService {
       const cart = this.transformCart(notNullCartsPromise) as TransformedCart;
       
       const locale = this.getCartLocale(cart);
-
       if (
-        (!this.checkTypeOfOptions(this.options_) && interval) &&
-        this.options_.localization
+        this.options_.localization &&
+        (!this.checkTypeOfOptions(this.options_) || interval === undefined)
       ) {
         const localeOptions = this.options_.localization[locale];
 
