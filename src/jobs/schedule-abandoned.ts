@@ -106,7 +106,7 @@ export default async function handler({
    
     // logger.info(cart.abandoned_lastdate)
     // logger.info(new Date(cart.abandoned_lastdate).getTime() + parse("5m"))
-    if (cart.abandoned_lastdate && (new Date(new Date(cart.abandoned_lastdate).getTime() + parse("1s")) > now)) {
+    if (cart.abandoned_lastdate && (new Date(new Date(cart.abandoned_lastdate).getTime() + parse("3m")) > now)) {
       // logger.info(`This Cart ${cart.id} has been processed recently`)
       continue
     }
