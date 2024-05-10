@@ -113,8 +113,11 @@ export default async function handler({
 
     if (cart.abandoned_lastdate &&
        cart.abandoned_last_interval &&
-      (new Date(new Date(cart.abandoned_lastdate).getTime()) < new Date(new Date(cart.abandoned_lastdate).getTime() + int))) {
-      // logger.info(`This Cart ${cart.id} has been processed recently and will be processes at next interval`)
+
+      (new Date() < new Date(new Date(cart.abandoned_lastdate).getTime() + int))) {
+      if (process.env.BETA_TESTING_PLUGIN === "TESTING") {
+        logger.info(`This Cart ${cart.id} has been processed recently and will be processes at next interval`)
+      }
       continue
     }
 
