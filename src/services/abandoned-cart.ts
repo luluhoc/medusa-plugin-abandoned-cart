@@ -118,7 +118,7 @@ export default class AbandonedCartService extends TransactionBaseService {
       const locale = this.getCartLocale(cart);
 
       if (
-        !this.checkTypeOfOptions(this.options_) &&
+        (!this.checkTypeOfOptions(this.options_) && interval) &&
         this.options_.localization
       ) {
         const localeOptions = this.options_.localization[locale];
@@ -165,7 +165,7 @@ export default class AbandonedCartService extends TransactionBaseService {
         dynamic_template_data: {
           ...cart,
           subject: subject ?? "You left something in your cart",
-          header: header ?? "You left something in your cart",
+          header: header ?? "Still thinking about it?",
         },
       };
 
