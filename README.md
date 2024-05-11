@@ -70,6 +70,20 @@ I strongly recommend using this plugin in combination with the [Medusa Plugin Se
       days_to_track: 7,
       set_as_completed_if_overdue: true,
       max_overdue: "2h",
+      localization: {
+          "fr": {
+            subject: "Vous avez quelque chose dans votre panier",
+            templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE_FR,
+          },
+          "pl": {
+            subject: "Masz coś w koszyku",
+            templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE_PL,
+          },
+          "en": {
+            subject: "You have something in your cart",
+            templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE,
+          },
+      },
       intervals: [
       {
         interval: "1h",
