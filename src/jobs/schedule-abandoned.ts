@@ -48,7 +48,7 @@ export default async function handler({
       abandoned_carts: TransformedCart[]
       total_carts: number
     };
-    await cacheService.set("abandoned_carts", JSON.stringify(abandonedCarts), 360);
+    await cacheService.set("abandoned_carts", JSON.stringify(abandonedCarts), 200);
   }
 
   if (abandonedCarts.total_carts > 1000) {
