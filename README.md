@@ -56,9 +56,9 @@ I strongly recommend using this plugin in combination with the [Medusa Plugin Se
 ### 3\. In `medusa-config.js` add the following at the end of the `plugins` array
 
   ```ts
-  const plugins = [
-    // ...,
-    {
+const plugins = [
+  // ...,
+  {
     resolve: `medusa-plugin-abandoned-cart`,
     /** @type {import('medusa-plugin-abandoned-cart').PluginOptions} */
     options: {
@@ -71,142 +71,142 @@ I strongly recommend using this plugin in combination with the [Medusa Plugin Se
       set_as_completed_if_overdue: true,
       max_overdue: "2h",
       localization: {
-          "fr": {
-            subject: "Vous avez quelque chose dans votre panier",
-            templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE_FR,
-          },
-          "pl": {
-            subject: "Masz coś w koszyku",
-            templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE_PL,
-          },
-          "en": {
-            subject: "You have something in your cart",
-            templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE,
-          },
+        fr: {
+          subject: "Vous avez quelque chose dans votre panier",
+          templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE_FR,
+        },
+        pl: {
+          subject: "Masz coś w koszyku",
+          templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE_PL,
+        },
+        en: {
+          subject: "You have something in your cart",
+          templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE,
+        },
       },
       intervals: [
-      {
-        interval: "1h",
-        subject: "You have something in your cart",
-        templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE,
-        localization: {
-          "fr": {
-            subject: "Vous avez quelque chose dans votre panier",
-            templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE_FR,
+        {
+          interval: "1h",
+          subject: "You have something in your cart",
+          templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE,
+          localization: {
+            fr: {
+              subject: "Vous avez quelque chose dans votre panier",
+              templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE_FR,
+            },
+            pl: {
+              subject: "Masz coś w koszyku",
+              templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE_PL,
+            },
+            en: {
+              subject: "You have something in your cart",
+              templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE,
+            },
           },
-          "pl": {
-            subject: "Masz coś w koszyku",
-            templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE_PL,
+        },
+        {
+          interval: "1d",
+          subject: "You have something in your cart",
+          templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE,
+          localization: {
+            fr: {
+              subject: "Vous avez quelque chose dans votre panier",
+              templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE_FR,
+            },
+            pl: {
+              subject: "Masz coś w koszyku",
+              templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE_PL,
+            },
+            en: {
+              subject: "You have something in your cart",
+              templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE,
+            },
           },
-          "en": {
-            subject: "You have something in your cart",
-            templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE,
+        },
+        {
+          interval: "5d",
+          subject: "You have something in your cart",
+          templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE,
+          localization: {
+            fr: {
+              subject: "Vous avez quelque chose dans votre panier",
+              templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE_FR,
+            },
+            pl: {
+              subject: "Masz coś w koszyku",
+              templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE_PL,
+            },
+            en: {
+              subject: "You have something in your cart",
+              templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE,
+            },
           },
-        }
-      },
-      {
-        interval: "1d",
-        subject: "You have something in your cart",
-        templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE,
-        localization: {
-          "fr": {
-            subject: "Vous avez quelque chose dans votre panier",
-            templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE_FR,
-          },
-          "pl": {
-            subject: "Masz coś w koszyku",
-            templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE_PL,
-          },
-          "en": {
-            subject: "You have something in your cart",
-            templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE,
-          },
-        }
-      },
-      {
-        interval: "5d",
-        subject: "You have something in your cart",
-        templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE,
-        localization: {
-          "fr": {
-            subject: "Vous avez quelque chose dans votre panier",
-            templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE_FR,
-          },
-          "pl": {
-            subject: "Masz coś w koszyku",
-            templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE_PL,
-          },
-          "en": {
-            subject: "You have something in your cart",
-            templateId: process.env.SENDGRID_ABANDONED_CART_TEMPLATE,
-          },
-        }
-      },
-    ]
+        },
+      ],
     },
   },
-  ]
+];
   ```
 
   ```ts
-      export interface BasePluginOptions {
-      /* enable sendgrid */
-      sendgridEnabled: boolean
-      /* email from which you will be sending */
-      from: { name?: string; email: string } | string
-      /* template id from sendgrid */
-      templateId: string
-      /* header line of the email optional */
+  export interface BasePluginOptions {
+  /* enable sendgrid */
+  sendgridEnabled: boolean
+  /* email from which you will be sending */
+  from: { name?: string; email: string } | string
+  /* template id from sendgrid */
+  templateId: string
+  /* header line of the email optional */
+  header?: string
+  /* number of days to track */
+  days_to_track?: number
+  /* subject of the email optional */
+  subject?: string
+  localization?: {
+    [key: string]: {
+      subject?: string
       header?: string
-      /* number of days to track */
-      days_to_track?: number
-      /* subject of the email optional */
+      templateId: string
+    };
+  }
+}
+
+export interface IntervalOptions {
+  /* interval example string "1d", "1h", "30m" 
+  check parse-duration package for more examples */
+  interval: string | number
+  /* subject of the email optional */
+  subject?: string
+  /* template id from sendgrid */
+  templateId?: string
+  localization?: {
+    [key: string]: {
       subject?: string
-      localization?: {
-        [key: string]: {
-          subject?: string
-          header?: string
-          templateId: string
-        };
-      }
-    }
+      header?: string
+      templateId: string
+    };
+  }
 
-    export interface IntervalOptions {
-      /* interval example string "1d", "1h", "30m" 
-      check parse-duration package for more examples */
-      interval: string | number
-      /* subject of the email optional */
+}
+
+export interface AutomatedAbandonedCart extends BasePluginOptions {
+  /* intervals */
+  intervals: Array<IntervalOptions>,
+  /* max overdue @default "2h"*/
+  max_overdue: string
+  /* set as completed if overdue */
+  set_as_completed_if_overdue: boolean
+}
+
+export interface ManualAbandonedCart extends BasePluginOptions {
+  localization: {
+    [key: string]: {
       subject?: string
-      /* template id from sendgrid */
-      templateId?: string
-      localization?: {
-        [key: string]: {
-          subject?: string
-          header?: string
-          templateId: string
-        };
-      }
-
-    }
-
-    export interface AutomatedAbandonedCart extends BasePluginOptions {
-      /* intervals */
-      intervals: Array<IntervalOptions>,
-      /* max overdue @default "2h"*/
-      max_overdue: string
-      /* set as completed if overdue */
-      set_as_completed_if_overdue: boolean
-    }
-
-    export interface ManualAbandonedCart extends BasePluginOptions {
-      localization: {
-        [key: string]: {
-          subject?: string
-          header?: string
-          templateId: string
-        };
-      }
-    }
+      header?: string
+      templateId: string
+    };
+  }
+}
   ```
 
   Remember to run migrations after adding the plugin to the `medusa-config.js` file
