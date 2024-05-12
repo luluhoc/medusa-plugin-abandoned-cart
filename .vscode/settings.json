@@ -1,3 +1,5 @@
 {
-  "i18next.i18nPaths": "/Users/lucjangrzesik/Desktop/dev/medusa-plugin-abandoned-cart/build/public/locales"
+  "i18next.i18nPaths": "/Users/lucjangrzesik/Desktop/dev/medusa-plugin-abandoned-cart/build/public/locales",
+  "eslint.experimental.useFlatConfig": true,
+  "eslint.workingDirectories": [{ "mode": "auto" }],
 }

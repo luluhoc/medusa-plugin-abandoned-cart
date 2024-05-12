@@ -6,7 +6,11 @@ import {
 } from "@medusajs/medusa";
 import { Lifetime } from "awilix";
 import CartRepository from "@medusajs/medusa/dist/repositories/cart";
-import { MedusaError, humanizeAmount, zeroDecimalCurrencies } from "medusa-core-utils";
+import {
+  MedusaError,
+  humanizeAmount,
+  zeroDecimalCurrencies,
+} from "medusa-core-utils";
 import type SendGridService from "medusa-plugin-sendgrid-typescript/dist/services/sendgrid";
 
 import {
@@ -15,7 +19,7 @@ import {
   PluginOptions,
   TransformedCart,
 } from "../types";
-import parse from 'parse-duration'
+import parse from "parse-duration";
 
 export default class AbandonedCartService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -39,18 +43,19 @@ export default class AbandonedCartService extends TransactionBaseService {
     } catch (e) {
       this.eventBusService = undefined;
     }
-    let op = options as AutomatedAbandonedCart
+    let op = options as AutomatedAbandonedCart;
     let sorted: IntervalOptions[] = [];
-    this.checkTypeOfOptions(options) && (sorted = op.intervals.sort((
-      a,
-      b,
-    ) => {
-      if (typeof a.interval === 'string' && typeof b.interval === 'string') {
-      return parse(a.interval) - parse(b.interval);
-      } else if (typeof a.interval === 'number' && typeof b.interval === 'number') {
-        return a.interval - b.interval;
-      }
-    }))
+    this.checkTypeOfOptions(options) &&
+      (sorted = op.intervals.sort((a, b) => {
+        if (typeof a.interval === "string" && typeof b.interval === "string") {
+          return parse(a.interval) - parse(b.interval);
+        } else if (
+          typeof a.interval === "number" &&
+          typeof b.interval === "number"
+        ) {
+          return a.interval - b.interval;
+        }
+      }));
 
     if (this.checkTypeOfOptions(options) && op.intervals && sorted.length > 0) {
       op = {
@@ -58,14 +63,15 @@ export default class AbandonedCartService extends TransactionBaseService {
         intervals: sorted.map((i) => {
           return {
             ...i,
-            interval: typeof i.interval === 'string' ? parse(i.interval) : i.interval
-          }
-        })
-      }
+            interval:
+              typeof i.interval === "string" ? parse(i.interval) : i.interval,
+          };
+        }),
+      };
     }
-   
+
     this.logger = container.logger;
-    this.options_ =  this.checkTypeOfOptions(options) ? op : options;
+    this.options_ = this.checkTypeOfOptions(options) ? op : options;
   }
 
   getCartLocale(cart: TransformedCart): string {
@@ -74,7 +80,7 @@ export default class AbandonedCartService extends TransactionBaseService {
 
   async sendAbandonedCartEmail(id: string, interval?: number) {
     if (!this.options_.sendgridEnabled || !this.sendGridService) {
-      this.logger.info("SendGrid is not enabled, emitting event")
+      this.logger.info("SendGrid is not enabled, emitting event");
       await this.eventBusService.emit("cart.send-abandoned-email", {
         id,
         interval,
@@ -114,7 +120,7 @@ export default class AbandonedCartService extends TransactionBaseService {
       }
 
       const cart = this.transformCart(notNullCartsPromise) as TransformedCart;
-      
+
       const locale = this.getCartLocale(cart);
       if (
         this.options_.localization &&
@@ -127,7 +133,10 @@ export default class AbandonedCartService extends TransactionBaseService {
           subject = localeOptions.subject ?? subject;
           header = localeOptions.header ?? header;
         }
-      } else if (this.checkTypeOfOptions(this.options_) && interval !== undefined) {
+      } else if (
+        this.checkTypeOfOptions(this.options_) &&
+        interval !== undefined
+      ) {
         const intervalOptions = this.options_.intervals.find(
           (i) => i.interval === interval,
         );
@@ -175,16 +184,24 @@ export default class AbandonedCartService extends TransactionBaseService {
         abandoned_lastdate: new Date().toISOString(),
         abandoned_count: (notNullCartsPromise?.abandoned_count || 0) + 1,
         abandoned_last_interval: interval || undefined,
-        abandoned_completed_at: this.checkTypeOfOptions(this.options_) && this.options_.intervals[this.options_.intervals.length - 1].interval === interval ? new Date().toISOString() : undefined,
+        abandoned_completed_at:
+          this.checkTypeOfOptions(this.options_) &&
+          this.options_.intervals[this.options_.intervals.length - 1]
+            .interval === interval
+            ? new Date().toISOString()
+            : undefined,
       });
 
-      const eventPromise = this.eventBusService.emit("cart.send-abandoned-email", {
-        id,
-        interval,
-      });
+      const eventPromise = this.eventBusService.emit(
+        "cart.send-abandoned-email",
+        {
+          id,
+          interval,
+        },
+      );
       this.logger.info(`Sending email for cart ${id}`);
       await Promise.all([emailPromise, cartPromise, eventPromise]);
-      
+
       return {
         success: true,
         message: "Email sent",
@@ -208,13 +225,13 @@ export default class AbandonedCartService extends TransactionBaseService {
 
   humanPrice_(amount: number | null | undefined, currency: string) {
     if (!amount) {
-      return "0.00"
+      return "0.00";
     }
 
-    const normalized = humanizeAmount(amount, currency)
+    const normalized = humanizeAmount(amount, currency);
     return normalized.toFixed(
-      zeroDecimalCurrencies.includes(currency.toLowerCase()) ? 0 : 2
-    )
+      zeroDecimalCurrencies.includes(currency.toLowerCase()) ? 0 : 2,
+    );
   }
 
   queryBuilder = (
@@ -223,7 +240,7 @@ export default class AbandonedCartService extends TransactionBaseService {
     skip: number,
     dateLimit?: number,
     fromAdmin?: boolean,
-  ): Promise<Cart[]> | Promise<Number> => {
+  ): Promise<Cart[]> | Promise<number> => {
     const cartRepo = this.activeManager_.withRepository(this.cartRepository);
     return cartRepo
       .createQueryBuilder("cart")
@@ -237,9 +254,15 @@ export default class AbandonedCartService extends TransactionBaseService {
       .andWhere("cart.deleted_at IS NULL")
       .andWhere("cart.completed_at IS NULL")
       .andWhere(
-        !fromAdmin ? `cart.created_at > now() - interval '1 day' * ${dateLimit || 7}` : "cart.created_at IS NOT NULL",
+        !fromAdmin
+          ? `cart.created_at > now() - interval '1 day' * ${dateLimit || 7}`
+          : "cart.created_at IS NOT NULL",
       )
-      .andWhere(!fromAdmin ? "cart.abandoned_completed_at IS NULL": "cart.email IS NOT NULL")
+      .andWhere(
+        !fromAdmin
+          ? "cart.abandoned_completed_at IS NULL"
+          : "cart.email IS NOT NULL",
+      )
       .andWhere("items.id IS NOT NULL") // Ensure there are items related to the cart
       .orderBy("cart.created_at", "DESC")
       .select([
@@ -270,7 +293,6 @@ export default class AbandonedCartService extends TransactionBaseService {
     await cartRepo.update(cartsIds, {
       abandoned_completed_at: new Date().toISOString(),
     });
-
   }
 
   async retrieveAbandonedCarts(
@@ -298,7 +320,7 @@ export default class AbandonedCartService extends TransactionBaseService {
       skipNumber,
       +dateLimit,
       fromAdmin,
-    ) as Promise<Number>;
+    ) as Promise<number>;
 
     const notNullCartsPromises = this.queryBuilder(
       "getMany",
@@ -334,9 +356,9 @@ export default class AbandonedCartService extends TransactionBaseService {
           ...item,
           price: `${this.humanPrice_(
             item.unit_price,
-            cart.region.currency_code
+            cart.region.currency_code,
           )} ${cart.region.currency_code}`,
-        }
+        };
       }),
       cart_context: cart.context,
       first_name: cart.shipping_address?.first_name,
@@ -345,7 +367,7 @@ export default class AbandonedCartService extends TransactionBaseService {
         (acc, item) => acc + item.unit_price * item.quantity,
         0,
       ),
-      
+
       created_at: cart.created_at,
       currency: cart.region.currency_code,
       region: cart.region.id,
