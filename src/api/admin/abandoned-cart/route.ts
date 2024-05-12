@@ -3,18 +3,29 @@ import AbandonedCartService from "../../../services/abandoned-cart";
 
 export async function GET(
   req: MedusaRequest,
-  res: MedusaResponse
+  res: MedusaResponse,
 ): Promise<void> {
   try {
     const abandonedCartService: AbandonedCartService = req.scope.resolve(
-      "abandonedCartService"
+      "abandonedCartService",
     );
 
-    const { take, skip, dateLimit } = req.query as { take: string; skip: string, dateLimit: string};
+    const { take, skip, dateLimit } = req.query as {
+      take: string;
+      skip: string;
+      dateLimit: string;
+    };
 
-    const carts = await abandonedCartService.retrieveAbandonedCarts(take, skip, +dateLimit, true);
+    const carts = await abandonedCartService.retrieveAbandonedCarts(
+      take,
+      skip,
+      +dateLimit,
+      true,
+    );
 
-    res.status(200).json({ carts: carts.abandoned_carts, count: carts.total_carts });
+    res
+      .status(200)
+      .json({ carts: carts.abandoned_carts, count: carts.total_carts });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -22,13 +33,13 @@ export async function GET(
 
 export async function POST(
   req: MedusaRequest<{
-    id?: string;  
+    id?: string;
   }>,
-  res: MedusaResponse
+  res: MedusaResponse,
 ): Promise<void> {
   try {
     const abandonedCartService: AbandonedCartService = req.scope.resolve(
-      "abandonedCartService"
+      "abandonedCartService",
     );
 
     if (!req.body.id) {

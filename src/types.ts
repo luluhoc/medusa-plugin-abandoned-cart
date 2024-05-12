@@ -2,70 +2,71 @@ import { LineItem } from "@medusajs/medusa";
 
 export interface BasePluginOptions {
   /* enable sendgrid */
-  sendgridEnabled: boolean
+  sendgridEnabled: boolean;
   /* email from which you will be sending */
-  from: { name?: string; email: string } | string
+  from: { name?: string; email: string } | string;
   /* template id from sendgrid */
-  templateId: string
+  templateId: string;
   /* header line of the email optional */
-  header?: string
+  header?: string;
   /* number of days to track */
-  days_to_track?: number
+  days_to_track?: number;
   /* subject of the email optional */
-  subject?: string
+  subject?: string;
   localization?: {
     [key: string]: {
-      subject?: string
-      header?: string
-      templateId: string
+      subject?: string;
+      header?: string;
+      templateId: string;
     };
-  }
+  };
 }
 
 export interface IntervalOptions {
   /* interval example string "1d", "1h", "30m" 
   check parse-duration package for more examples */
-  interval: string | number
+  interval: string | number;
   /* subject of the email optional */
-  subject?: string
-  header?: string
+  subject?: string;
+  header?: string;
   /* template id from sendgrid */
-  templateId?: string
+  templateId?: string;
   localization?: {
     [key: string]: {
-      subject?: string
-      header?: string
-      templateId: string
+      subject?: string;
+      header?: string;
+      templateId: string;
     };
-  }
-
+  };
 }
 
 export interface AutomatedAbandonedCart extends BasePluginOptions {
   /* intervals */
-  intervals: Array<IntervalOptions>,
+  intervals: Array<IntervalOptions>;
   /* max overdue @default "2h"*/
-  max_overdue: string
+  max_overdue: string;
   /* set as completed if overdue */
-  set_as_completed_if_overdue: boolean
+  set_as_completed_if_overdue: boolean;
 }
 
 export interface ManualAbandonedCart extends BasePluginOptions {
   localization: {
     [key: string]: {
-      subject?: string
-      header?: string
-      templateId: string
+      subject?: string;
+      header?: string;
+      templateId: string;
     };
-  }
+  };
 }
 
-export type PluginOptions = AutomatedAbandonedCart | ManualAbandonedCart
+export type PluginOptions = AutomatedAbandonedCart | ManualAbandonedCart;
 
-
-export type NewLineItem = Omit<LineItem, "beforeUpdate" | "afterUpdateOrLoad"> & {
-  price: string
-}
+export type NewLineItem = Omit<
+  LineItem,
+  "beforeUpdate" | "afterUpdateOrLoad"
+> & {
+  price: string;
+};
 
 export interface TransformedCart {
   id: string;
