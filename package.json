@@ -1,6 +1,6 @@
 {
   "name": "medusa-plugin-abandoned-cart",
-  "version": "2.0.55",
+  "version": "2.0.56",
   "description": "Medusa plugin for abandoned cart tracking and recovery",
   "author": "Lucjan Grzesik (https://github.com/luluhoc)",
   "license": "MIT",
