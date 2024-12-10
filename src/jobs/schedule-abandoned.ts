@@ -75,12 +75,17 @@ export default async function handler({ container }: ScheduledJobArgs) {
       int = null;
     }
 
+    let firstInterval = op.intervals[0]?.interval;
+
     if (!int) {
       continue;
     }
 
     if (typeof int === "string") {
       int = parse(int);
+      if (typeof op.intervals[0]?.interval === "string") {
+        firstInterval = parse(op.intervals[0]?.interval);
+      }
     }
     if (process.env.BETA_TESTING === "TESTING") {
       logger.info(`Interval for cart ${cart.id} is ${int}`);
@@ -88,7 +93,21 @@ export default async function handler({ container }: ScheduledJobArgs) {
 
     const now = new Date();
     const cartCreatedAt = new Date(cart.created_at);
-    const cartInterval = new Date(cartCreatedAt.getTime() + int);
+    const cartUpdatedAt = new Date(cart.updated_at);
+    const differenceUpCreated =
+      cartUpdatedAt.getTime() - cartCreatedAt.getTime();
+
+    let cartInterval = new Date(cartCreatedAt.getTime() + int);
+    if (
+      !cart.abandoned_lastdate &&
+      differenceUpCreated > (firstInterval as number) + parse("5m")
+    ) {
+      if (process.env.BETA_TESTING === "TESTING") {
+        logger.info(`Cart ${cart.id} is not ready to be processed`);
+      }
+      cartInterval = new Date(cartUpdatedAt.getTime() + int);
+    }
+
     // cart from now difference
     const diff = cartInterval.getTime() - now.getTime();
 

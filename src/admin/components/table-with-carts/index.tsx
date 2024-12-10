@@ -1,13 +1,13 @@
-import type { WidgetConfig } from "@medusajs/admin";
 import { Container, Table, Button } from "@medusajs/ui";
 import { useAdminCustomQuery, useAdminCustomPost } from "medusa-react";
 import ReactCountryFlag from "react-country-flag";
 import React from "react";
 import { AbandonedCartResponse } from "../../types/abandoned-cart";
 import { toast } from "@medusajs/ui";
-import LineLoading from "../../components/line-loading";
+
 import { Toaster, Tooltip } from "@medusajs/ui";
 import { InformationCircleSolid } from "@medusajs/icons";
+import LineLoading from "../line-loading";
 
 const AbandonedCarts = () => {
   const [pageSize] = React.useState(15);
@@ -191,10 +191,6 @@ const AbandonedCarts = () => {
       </div>
     </Container>
   );
-};
-
-export const config: WidgetConfig = {
-  zone: "order.list.after",
 };
 
 export default AbandonedCarts;
