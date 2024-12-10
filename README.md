@@ -28,7 +28,7 @@ I strongly recommend using this plugin in combination with the [Medusa Plugin Se
 
 ## Prerequisites
 
-- [Medusa backend](https://docs.medusajs.com/development/backend/install)
+- [Medusa backend](https://docs.medusajs.com/development/backend/install) 1.x (Not compatible yet with v2)
 
 ---
 
