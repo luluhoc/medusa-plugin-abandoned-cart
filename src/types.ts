@@ -77,6 +77,7 @@ export interface TransformedCart {
   last_name: string;
   totalPrice: number;
   created_at: Date;
+  updated_at: Date;
   currency: string;
   region: string;
   country_code: string;

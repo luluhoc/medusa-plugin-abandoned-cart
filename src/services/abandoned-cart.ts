@@ -104,6 +104,7 @@ export default class AbandonedCartService extends TransactionBaseService {
           "id",
           "email",
           "created_at",
+          "updated_at",
           "region",
           "context",
           "abandoned_count",
@@ -269,6 +270,7 @@ export default class AbandonedCartService extends TransactionBaseService {
         "cart.id",
         "cart.email",
         "cart.created_at",
+        "cart.updated_at",
         "cart.region",
         "cart.context",
         "items",
@@ -369,6 +371,7 @@ export default class AbandonedCartService extends TransactionBaseService {
       ),
 
       created_at: cart.created_at,
+      updated_at: cart.updated_at,
       currency: cart.region.currency_code,
       region: cart.region.id,
       country_code: cart.shipping_address?.country_code,
