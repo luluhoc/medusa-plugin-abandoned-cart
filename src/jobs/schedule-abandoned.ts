@@ -98,10 +98,7 @@ export default async function handler({ container }: ScheduledJobArgs) {
       cartUpdatedAt.getTime() - cartCreatedAt.getTime();
 
     let cartInterval = new Date(cartCreatedAt.getTime() + int);
-    if (
-      !cart.abandoned_lastdate &&
-      differenceUpCreated > (firstInterval as number) + parse("5m")
-    ) {
+    if (differenceUpCreated > (firstInterval as number) + parse("5m")) {
       if (process.env.BETA_TESTING === "TESTING") {
         logger.info(`Cart ${cart.id} is not ready to be processed`);
       }
