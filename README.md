@@ -1,3 +1,7 @@
+###
+FOR MEDUSA V2 use
+https://github.com/luluhoc/medusa-abandoned-cart-plugin
+
 # Medusa Abandoned Cart Plugin
 
 ## Still in beta proceed with caution
