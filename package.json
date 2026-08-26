@@ -34,7 +34,7 @@
     "lint": "eslint ./src --fix"
   },
   "dependencies": {
-    "parse-duration": "^1.1.0",
+    "parse-duration": "^2.0.0",
     "recharts": "^2.12.7",
     "typeorm": "^0.3.20"
   },
